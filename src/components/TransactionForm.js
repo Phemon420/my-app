@@ -6,17 +6,21 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 // import { useToast } from "@/components/ui/toast"
 import { useToast } from "@/hooks/use-toast"
+import { CATEGORIES } from "@/models/Categories"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 export default function TransactionForm({ onTransactionAdded }) {
   const [amount, setAmount] = useState("")
   const [date, setDate] = useState("")
   const [description, setDescription] = useState("")
   const { toast } = useToast()
+  const [category, setCategory] = useState("")
+
 
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    if (!amount || !date || !description) {
+    if (!amount || !date || !description || !category) {
       toast({
         title: "Error",
         description: "Please fill in all fields",
@@ -31,9 +35,9 @@ export default function TransactionForm({ onTransactionAdded }) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ amount: Number.parseFloat(amount), date, description }),
+        body: JSON.stringify({ amount: Number.parseFloat(amount), date, description, category }),
       })
-
+      
       if (response.ok) {
         toast({
           title: "Success",
@@ -42,6 +46,7 @@ export default function TransactionForm({ onTransactionAdded }) {
         setAmount("")
         setDate("")
         setDescription("")
+        setCategory("")
         onTransactionAdded()
       } else {
         throw new Error("Failed to add transaction")
@@ -62,7 +67,6 @@ export default function TransactionForm({ onTransactionAdded }) {
         <Input
           id="amount"
           type="number"
-          step="0.01"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           placeholder="Enter amount"
@@ -81,6 +85,21 @@ export default function TransactionForm({ onTransactionAdded }) {
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Enter description"
         />
+      </div>
+      <div>
+        <Label htmlFor="category">Category</Label>
+        <Select value={category} onValueChange={setCategory}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select a category" />
+          </SelectTrigger>
+          <SelectContent>
+            {CATEGORIES.map((cat) => (
+              <SelectItem key={cat} value={cat}>
+                {cat}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
       <Button type="submit">Add Transaction</Button>
     </form>

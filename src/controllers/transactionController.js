@@ -17,7 +17,7 @@ export async function createTransaction(req) {
   try {
     await connectToDatabase();
     const data = await req.json();
-    console.log(data);
+    console.log("Received Data:", data);
     // const { valid, errors } = await validateTransaction(data);
     // if (!valid) {
     //   return NextResponse.json({ success: false, errors });
@@ -67,12 +67,12 @@ export const updateTransaction = async (req) => {
   await connectToDatabase()
 
   const _id = req.nextUrl.pathname.split("/").pop()
-  const { description, amount } = await req.json()
+  const { description, amount, category } = await req.json()
 
   try {
     const updatedTransaction = await Transaction.findByIdAndUpdate(
       _id,
-      { description, amount },
+      { description, amount, category },
       { new: true } // Return updated document
     )
 
@@ -85,3 +85,5 @@ export const updateTransaction = async (req) => {
     return new Response(JSON.stringify({ success: false, error: "Server error" }), { status: 500 })
   }
 }
+
+

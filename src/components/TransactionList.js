@@ -4,11 +4,13 @@ import useSWR from "swr"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
 import { useState } from "react"
+import { CATEGORIES } from "@/models/Categories"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 const fetcher = async (url) => {
   const res = await fetch(url)
   const data = await res.json()
-  console.log(data);
+  console.log(data)
   return data
 }
 
@@ -24,10 +26,9 @@ export default function TransactionList({ onTransactionDeleted }) {
   })
 
   const { toast } = useToast()
-  const [editingId, setEditingId] = useState(null) // Track which transaction is being edited
-  const [editValue, setEditValue] = useState({ description: "", amount: "" }) // Store input values
+  const [editingId, setEditingId] = useState(null)
+  const [editValue, setEditValue] = useState({ description: "", amount: "", category: "" })
 
-  // Handle loading state
   if (isLoading) {
     return (
       <div>
@@ -37,7 +38,6 @@ export default function TransactionList({ onTransactionDeleted }) {
     )
   }
 
-  // Handle error state
   if (error) {
     return (
       <div>
@@ -53,11 +53,11 @@ export default function TransactionList({ onTransactionDeleted }) {
     try {
       const response = await fetch(`/api/transactions/${id}`, {
         method: "DELETE",
-      });
+      })
 
       if (response.ok) {
         toast({ title: "Success", description: "Transaction deleted successfully" })
-        mutate() // Refresh the transactions list
+        mutate()
         onTransactionDeleted?.()
       } else {
         const errorData = await response.json()
@@ -69,13 +69,21 @@ export default function TransactionList({ onTransactionDeleted }) {
   }
 
   const handleEditClick = (transaction) => {
-    setEditingId(transaction._id) // Set transaction ID in edit mode
-    setEditValue({ description: transaction.description, amount: transaction.amount }) // Prefill values
+    setEditingId(transaction._id)
+    setEditValue({
+      description: transaction.description,
+      amount: transaction.amount,
+      category: transaction.category || ""
+    })
   }
 
   const handleEditChange = (e) => {
     const { name, value } = e.target
     setEditValue((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleCategoryChange = (value) => {
+    setEditValue((prev) => ({ ...prev, category: value }))
   }
 
   const handleEditSubmit = async (id) => {
@@ -88,8 +96,8 @@ export default function TransactionList({ onTransactionDeleted }) {
 
       if (response.ok) {
         toast({ title: "Success", description: "Transaction updated successfully" })
-        mutate() // Refresh data
-        setEditingId(null) // Exit edit mode
+        mutate()
+        setEditingId(null)
       } else {
         const errorData = await response.json()
         throw new Error(errorData.error || "Failed to update transaction")
@@ -116,15 +124,28 @@ export default function TransactionList({ onTransactionDeleted }) {
                       name="description"
                       value={editValue.description}
                       onChange={handleEditChange}
-                      className="border px-2 py-1"
+                      className="border px-2 py-1 rounded"
                     />
                     <input
                       type="number"
                       name="amount"
                       value={editValue.amount}
                       onChange={handleEditChange}
-                      className="border px-2 py-1"
+                      className="border px-2 py-1 rounded w-24"
                     />
+                    <Select 
+                      value={editValue.category} 
+                      onValueChange={handleCategoryChange}
+                    >
+                      <SelectTrigger className="w-32">
+                        <SelectValue placeholder="Category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {CATEGORIES.map((cat) => (
+                          <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <Button variant="outline" size="sm" onClick={() => handleEditSubmit(transaction._id)}>
                       Save
                     </Button>
@@ -133,6 +154,7 @@ export default function TransactionList({ onTransactionDeleted }) {
                   <>
                     <p className="font-semibold">{transaction.description}</p>
                     <p className="text-sm text-gray-500">{formatDate(transaction.date)}</p>
+                    <p className="text-sm text-gray-500">{transaction.category}</p>
                   </>
                 )}
               </div>
