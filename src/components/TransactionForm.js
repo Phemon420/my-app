@@ -8,6 +8,8 @@ import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
 import { CATEGORIES } from "@/models/Categories"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+
 
 export default function TransactionForm({ onTransactionAdded }) {
   const [amount, setAmount] = useState("")
@@ -62,6 +64,7 @@ export default function TransactionForm({ onTransactionAdded }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 mb-6">
+      <h1 className="text-2xl">Transaction Form</h1>
       <div>
         <Label htmlFor="amount">Amount</Label>
         <Input
@@ -105,4 +108,3 @@ export default function TransactionForm({ onTransactionAdded }) {
     </form>
   )
 }
-

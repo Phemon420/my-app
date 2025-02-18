@@ -1,14 +1,13 @@
 import mongoose from "mongoose";
 
-const TransactionSchema = new mongoose.Schema({
+const BudgetSchema = new mongoose.Schema({
   // id: { type: String, required: true, unique: true },
   amount: { type: Number, required: true },
-  date: { type: Date, required: true },
-  description: { type: String, required: true },
   category: { type: String, required: true },
+  month: { type: String, required: true }
 }, { timestamps: true });
 
 
-const Transaction = mongoose.models.Transaction || mongoose.model("Transaction", TransactionSchema);
+const Budget = mongoose.models.Budget || mongoose.model("Budget", BudgetSchema);
 // const Transaction=mongoose.model("Transaction", TransactionSchema);
-export default Transaction;
+export default Budget;

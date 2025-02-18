@@ -5,7 +5,9 @@ import TransactionForm from "@/components/TransactionForm"
 import TransactionList from "@/components/TransactionList"
 import ExpensesChart from "@/components/ExpensesChart"
 import CategoryPieChart from "@/components/CategoryPieChart"
+import BudgetForm from "@/components/BudgetForm"
 import Dashboard from "@/components/Dashboard"
+import BudgetComparisonChart from "@/components/BudgetComparisonChart"
 import { mutate } from 'swr'
 
 export default function Home() {
@@ -21,6 +23,7 @@ export default function Home() {
     // Revalidate all components using SWR
     mutate('/api/transactions')
     mutate('/api/transactions/category')
+    mutate('/api/budgets/')
   }, [updateTrigger]) // Dependency on updateTrigger
 
   return (
@@ -33,10 +36,13 @@ export default function Home() {
           <TransactionList key={updateTrigger} onTransactionDeleted={handleTransactionChange} />
         </div>
         <div className="space-y-6">
+          <BudgetForm onBudgetSet={handleTransactionChange} />
           <ExpensesChart />
           <CategoryPieChart />
         </div>
+        
       </div>
+      <BudgetComparisonChart />
     </main>
   )
 }
