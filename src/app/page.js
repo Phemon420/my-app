@@ -40,7 +40,6 @@ export default function Home() {
           <ExpensesChart />
           <CategoryPieChart />
         </div>
-        
       </div>
       <BudgetComparisonChart />
     </main>

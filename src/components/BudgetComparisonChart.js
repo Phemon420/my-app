@@ -7,6 +7,7 @@ import useSWR from 'swr'
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { CATEGORIES } from "@/models/Categories"
+import SpendingInsights from "@/components/SpendingInsights"
 
 const MONTHS = [
   { value: "1", label: "January" },
@@ -67,7 +68,7 @@ const processTransactionData = (rawData,selectedMonth) => {
     const transactionYear = transactionDate.getFullYear();
     const transactionMonth = transactionDate.getMonth() + 1;
     //const transactionMonth = parseInt(transaction.month.split('-')[1])
-    console.log(transactionMonth,transactionYear)
+    //console.log(transactionMonth,transactionYear)
     if (CATEGORIES.includes(category) && transactionMonth == selectedMonth && transactionYear === new Date().getFullYear()) {
       acc[category].actualAmount += Number(transaction.amount) || 0
     }
@@ -78,8 +79,8 @@ const processTransactionData = (rawData,selectedMonth) => {
 
 const processTargetData = (rawData, selectedMonth) => {
   // Initialize an object with all categories set to 0
-  console.log(rawData)
-  console.log("selected Month: ", selectedMonth)
+  // console.log(rawData)
+  // console.log("selected Month: ", selectedMonth)
   const initialData = CATEGORIES.reduce((acc, category) => {
     acc[category] = { budgetAmount: 0 }
     return acc
@@ -104,7 +105,7 @@ const processTargetData = (rawData, selectedMonth) => {
     const category = budget.category
     // Extract month from the date string (e.g., "2025-06" → 6)
     const budgetMonth = parseInt(budget.month.split('-')[1])
-    console.log(budgetMonth)
+    //console.log(budgetMonth)
     
     if (CATEGORIES.includes(category) && budgetMonth === selectedMonth) {
       acc[category].budgetAmount += Number(budget.amount) || 0
@@ -152,7 +153,7 @@ export default function BudgetComparisonChart() {
 
   // Process the data
   const transactions = processTransactionData(transdata,selectedMonth)
-  //console.log(transactions)
+  console.log(typeof transactions)
   const budgets = processTargetData(budgetData,selectedMonth)
   //console.log(budgets)
 
@@ -211,6 +212,7 @@ export default function BudgetComparisonChart() {
           </BarChart>
         </ResponsiveContainer>
       </CardContent>
+      <SpendingInsights budgetData={budgets} expenseData={transactions} />
     </Card>
   )
 }
